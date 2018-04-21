@@ -112,6 +112,7 @@ CreateDriver::CreateDriver(ros::NodeHandle& nh)
   bumper_pub_ = nh.advertise<ca_msgs::Bumper>("bumper", 30);
   wheeldrop_pub_ = nh.advertise<std_msgs::Empty>("wheeldrop", 30);
   wheel_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states", 10);
+  cliff_pub_ = nh.advertise<std_msgs::Int16>("cliff_state", 30);
 
   // Setup diagnostics
   diagnostics_.add("Battery Status", this, &CreateDriver::updateBatteryDiagnostics);
@@ -250,6 +251,7 @@ bool CreateDriver::update()
   publishMode();
   publishBumperInfo();
   publishWheeldrop();
+  publishCliffSensorStates();
 
   // If last velocity command was sent longer than latch duration, stop robot
   if (ros::Time::now() - last_cmd_vel_time_ >= ros::Duration(latch_duration_))
@@ -590,6 +592,20 @@ void CreateDriver::publishWheeldrop()
 {
   if (robot_->isWheeldrop())
     wheeldrop_pub_.publish(empty_msg_);
+}
+
+void CreateDriver::publishCliffSensorStates()
+{
+  if (robot_->isCliff())
+  {
+    int16_msg_.data = 1;
+    cliff_pub_.publish(int16_msg_);
+  }
+  else
+  {
+    int16_msg_.data = 0;
+    cliff_pub_.publish(int16_msg_);
+  }
 }
 
 void CreateDriver::spinOnce()

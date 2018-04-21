@@ -85,6 +85,7 @@ private:
   void publishMode();
   void publishBumperInfo();
   void publishWheeldrop();
+  void publishCliffSensorStates();
 
 protected:
   ros::NodeHandle nh_;
@@ -120,6 +121,7 @@ protected:
   ros::Publisher bumper_pub_;
   ros::Publisher wheeldrop_pub_;
   ros::Publisher wheel_joint_pub_;
+  ros::Publisher cliff_pub_;
 
 public:
   CreateDriver(ros::NodeHandle& nh);
